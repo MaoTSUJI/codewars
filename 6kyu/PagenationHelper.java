@@ -4,8 +4,8 @@ import java.util.List;
 
 public class PaginationHelper<I> {
 
-  private List<I> collection;
-  private int itemsPerPage;
+  private final List<I> collection;
+  private final int itemsPerPage;
 
   /**
    * The constructor takes in an array of items and a integer indicating how many
@@ -14,7 +14,6 @@ public class PaginationHelper<I> {
   public PaginationHelper(List<I> collection, int itemsPerPage) {
     this.collection = collection;
     this.itemsPerPage = itemsPerPage;
-    System.out.println(collection + ", " + itemsPerPage);
   }
 
   /**
@@ -28,7 +27,7 @@ public class PaginationHelper<I> {
    * returns the number of pages
    */
   public int pageCount() {
-    return itemCount() % itemsPerPage > 0 ? itemCount() / itemsPerPage + 1 : itemCount() / itemsPerPage;
+    return (int) Math.ceil(itemCount() / (float) itemsPerPage);
   }
 
   /**
@@ -36,12 +35,13 @@ public class PaginationHelper<I> {
    * this method should return -1 for pageIndex values that are out of range
    */
   public int pageItemCount(int pageIndex) {
-    if (pageIndex + 1 > pageCount()) {
+    if (pageIndex >= pageCount() || pageIndex < 0) {
       return -1;
-    } else if ((pageIndex + 1) == pageCount() && itemCount() % itemsPerPage > 0) {
+    } else if (pageIndex < pageCount() - 1) {
+      return itemsPerPage;
+    } else {
       return itemCount() % itemsPerPage;
     }
-    return itemsPerPage;
   }
 
   /**
@@ -49,7 +49,7 @@ public class PaginationHelper<I> {
    * return -1 for itemIndex values that are out of range
    */
   public int pageIndex(int itemIndex) {
-    if (itemIndex < 0 || itemCount() == 0 || itemIndex > itemCount()) {
+    if (itemIndex < 0 || itemIndex >= itemCount()) {
       return -1;
     }
     return itemIndex / itemsPerPage;
